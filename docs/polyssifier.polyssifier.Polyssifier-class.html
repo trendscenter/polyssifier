@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>polyssifier.polyssifier.Polyssifier</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="polyssifier-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="polyssifier-module.html">Package&nbsp;polyssifier</a> ::
+        <a href="polyssifier.polyssifier-module.html">Module&nbsp;polyssifier</a> ::
+        Class&nbsp;Polyssifier
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="polyssifier.polyssifier.Polyssifier-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Polyssifier</h1><p class="nomargin-top"><span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier">source&nbsp;code</a></span></p>
+<p>Polyssifier - wrapper for sklearn classifiers and regressors. Run 
+  multiple models on data, and output a report.</p>
+  <p>| variable     | description   | dtype       | expected vals     | | 
+  ------------ | ------------- | ----------- | ----------------- | | data
+  |   feature set | np.ndarray  | ----------------- | | label        |   
+  label set   | np.ndarray  | ----------------- | | n_folds      | # of 
+  folds    | int         | any integer       | | scale        | scale data?
+  | boolean     | any boolean       | | scoring      | score metric  | str
+  | 'auc', ...        | | project_name | folder name   | str         | any 
+  slugified str | | concurrency  | # workers     | int         | any int 
+  below max | | verbose      | verbose out   | boolean     | any boolean
+  | | num_degrees  |degree of poly | int         | any int           |</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">data</span>,
+        <span class="summary-sig-arg">label</span>,
+        <span class="summary-sig-arg">do_regress</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">n_folds</span>=<span class="summary-sig-default">10</span>,
+        <span class="summary-sig-arg">scale</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">exclude</span>=<span class="summary-sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>,
+        <span class="summary-sig-arg">feature_selection</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">save</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">scoring</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">auc</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">project_name</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">concurrency</span>=<span class="summary-sig-default">1</span>,
+        <span class="summary-sig-arg">verbose</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">num_degrees</span>=<span class="summary-sig-default">1</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="polyssifier.polyssifier.Polyssifier-class.html#build" class="summary-sig-name">build</a>(<span class="summary-sig-arg">Polyssifier</span>)</span><br />
+      Builds the models - either classifiers or regressors.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.build">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="polyssifier.polyssifier.Polyssifier-class.html#run" class="summary-sig-name">run</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Run the analysis.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.run">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="process_args"></a><span class="summary-sig-name">process_args</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Process input, and store in two variables: args - just the full args 
+      args2 - arguments related to input models</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.process_args">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="fit_models"></a><span class="summary-sig-name">fit_models</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Initialize parallel pool</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.fit_models">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="gather_results"></a><span class="summary-sig-name">gather_results</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Gathers results</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.gather_results">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="perform_voting"></a><span class="summary-sig-name">perform_voting</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.perform_voting">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="compute_median"></a><span class="summary-sig-name">compute_median</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.compute_median">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_save_object"></a><span class="summary-sig-name">_save_object</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">fname</span>,
+        <span class="summary-sig-arg">obj</span>)</span><br />
+      dump object to pickle</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier._save_object">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="polyssifier.polyssifier.Polyssifier-class.html#_scorer" class="summary-sig-name" onclick="show_private();">_scorer</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">clf</span>,
+        <span class="summary-sig-arg">X</span>,
+        <span class="summary-sig-arg">y</span>)</span><br />
+      Function that scores a classifier according to what is available as a
+      predict function.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier._scorer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="polyssifier.polyssifier.Polyssifier-class.html#fit_clf" class="summary-sig-name">fit_clf</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">args</span>,
+        <span class="summary-sig-arg">clf_name</span>,
+        <span class="summary-sig-arg">val</span>,
+        <span class="summary-sig-arg">n_fold</span>,
+        <span class="summary-sig-arg">project_name</span>,
+        <span class="summary-sig-arg">save</span>,
+        <span class="summary-sig-arg">scoring</span>)</span><br />
+      Multiprocess safe function that fits classifiers args: shared 
+      dictionary that contains</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.fit_clf">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="create_polynomial"></a><span class="summary-sig-name">create_polynomial</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">data</span>,
+        <span class="summary-sig-arg">degree</span>)</span><br />
+      :param data: the data (numpy matrix) which will have its data vectors
+      raised to powers :param degree: the degree of the polynomial we wish 
+      to predict :return: a new data matrix of the specified degree (for 
+      polynomial fitting purposes)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.create_polynomial">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="polyssifier.polyssifier.Polyssifier-class.html#_reg_scorer" class="summary-sig-name" onclick="show_private();">_reg_scorer</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">reg</span>,
+        <span class="summary-sig-arg">X</span>,
+        <span class="summary-sig-arg">y</span>,
+        <span class="summary-sig-arg">scoring</span>)</span><br />
+      Function that scores a regressor according to what is available as a 
+      predict function.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier._reg_scorer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="polyssifier.polyssifier.Polyssifier-class.html#fit_reg" class="summary-sig-name">fit_reg</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">args</span>,
+        <span class="summary-sig-arg">reg_name</span>,
+        <span class="summary-sig-arg">val</span>,
+        <span class="summary-sig-arg">n_fold</span>,
+        <span class="summary-sig-arg">project_name</span>,
+        <span class="summary-sig-arg">save</span>,
+        <span class="summary-sig-arg">scoring</span>)</span><br />
+      Multiprocess safe function that fits classifiers args: shared 
+      dictionary that contains</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.fit_reg">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="build"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">build</span>(<span class="sig-arg">Polyssifier</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.build">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Builds the models - either classifiers or regressors. Initializes 
+  scores dataframe. Initializes predictions dataframe. Initializes 
+  test_probability dataframe. Initializes CV folds Processes and stores 
+  input args.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="run"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">run</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.run">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Run the analysis. Fits the models, gathers results, aggregates scores,
+  generates the report, and saves results.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="_scorer"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_scorer</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">clf</span>,
+        <span class="sig-arg">X</span>,
+        <span class="sig-arg">y</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier._scorer">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Function that scores a classifier according to what is available as a 
+  predict function. Input:</p>
+  <ul>
+    <li>
+      clf = Fitted classifier object
+    </li>
+    <li>
+      X = input data matrix
+    </li>
+    <li>
+      y = estimated labels
+    </li>
+  </ul>
+  <p>Output:</p>
+  <ul>
+    <li>
+      AUC score for binary classification or F1 for multiclass
+    </li>
+  </ul>
+  <p>The order of priority is as follows:</p>
+  <ul>
+    <li>
+      predict_proba
+    </li>
+    <li>
+      decision_function
+    </li>
+    <li>
+      predict
+    </li>
+  </ul>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="fit_clf"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">fit_clf</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">args</span>,
+        <span class="sig-arg">clf_name</span>,
+        <span class="sig-arg">val</span>,
+        <span class="sig-arg">n_fold</span>,
+        <span class="sig-arg">project_name</span>,
+        <span class="sig-arg">save</span>,
+        <span class="sig-arg">scoring</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.fit_clf">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Multiprocess safe function that fits classifiers args: shared 
+  dictionary that contains</p>
+  <ul>
+    <li>
+      X = all data
+    </li>
+    <li>
+      y = all labels
+    </li>
+    <li>
+      k_fold = list of train and test indexes for each fold
+    </li>
+    <li>
+      clf_name = name of the classifier model
+    </li>
+    <li>
+      val = dictionary with
+    </li>
+    <li>
+      clf = sklearn compatible classifier
+    </li>
+    <li>
+      parameters = dictionary with parameters, can be used for grid search
+    </li>
+    <li>
+      n_fold = number of folds
+    </li>
+    <li>
+      project_name = string with the project folder name to save model
+    </li>
+  </ul>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="_reg_scorer"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_reg_scorer</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">reg</span>,
+        <span class="sig-arg">X</span>,
+        <span class="sig-arg">y</span>,
+        <span class="sig-arg">scoring</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier._reg_scorer">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Function that scores a regressor according to what is available as a 
+  predict function. Input:</p>
+  <ul>
+    <li>
+      reg = Fitted regressor object
+    </li>
+    <li>
+      X = input data matrix
+    </li>
+    <li>
+      y = corresponding values to the data matrix
+    </li>
+  </ul>
+  <p>Output:</p>
+  <ul>
+    <li>
+      The mean sqaure error or r squared value for the given regressor and 
+      data. The default scoring is r squared value.
+    </li>
+  </ul>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="fit_reg"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">fit_reg</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">args</span>,
+        <span class="sig-arg">reg_name</span>,
+        <span class="sig-arg">val</span>,
+        <span class="sig-arg">n_fold</span>,
+        <span class="sig-arg">project_name</span>,
+        <span class="sig-arg">save</span>,
+        <span class="sig-arg">scoring</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="polyssifier.polyssifier-pysrc.html#Polyssifier.fit_reg">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Multiprocess safe function that fits classifiers args: shared 
+  dictionary that contains</p>
+  <ul>
+    <li>
+      X = all data
+    </li>
+    <li>
+      y = all labels
+    </li>
+    <li>
+      k_fold = list of train and test indexes for each fold
+    </li>
+    <li>
+      reg_name = name of the classifier or regressor model
+    </li>
+    <li>
+      val = dictionary with
+    </li>
+    <li>
+      reg = sklearn compatible classifier
+    </li>
+    <li>
+      parameters = dictionary with parameters, can be used for grid search
+    </li>
+    <li>
+      n_fold = number of folds
+    </li>
+    <li>
+      project_name = string with the project folder name to save model
+    </li>
+  </ul>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="polyssifier-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Jul 13 13:37:42 2018
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
