@@ -14,7 +14,7 @@ import time
 from sklearn.preprocessing import LabelEncoder
 from itertools import starmap
 from .poly_utils import (build_classifiers, MyVoter, build_regressors,
-                        MyRegressionMedianer)
+                         MyRegressionMedianer)
 from .default_include import DEFAULT_include
 from .report import Report
 from .logger import make_logger
@@ -77,8 +77,10 @@ class Polysis(ABC):
         self.data = data
         self.num_degrees = num_degrees
         self.path = path
+        self.project_path = os.path.join(self.path, self.project_name)
         self.confusions = {}
         self.coefficients = {}
+        self.models = {}
 
     @abstractmethod
     def initialize_folds(self):
@@ -201,16 +203,17 @@ class Polysis(ABC):
                              predictions=self.predictions,
                              test_prob=self.test_prob, scoring=self.scoring,
                              coefficients=self.coefficients,
-                             feature_selection=self.feature_selection, save=self.save)
+                             feature_selection=self.feature_selection, save=self.save,
+                             include=self.include, pathname=self.project_path)
         self.format_report_summary()
 
     def save_results(self):
         if self.save:
             logger.info('Saving...')
-            self.save_object('poly_' + self.project_name +
-                             '/scores.pkl', self.scores)
-            self.save_object('poly_' + self.project_name +
-                             '/report.pkl', self.report)
+            self._save_object(self.project_path +
+                              '/scores.pkl', self.scores)
+            self._save_object(self.project_path +
+                              '/report.pkl', self.report)
 
     def print_scores(self):
         if self.verbose:

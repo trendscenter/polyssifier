@@ -1,7 +1,7 @@
 import os
 from functools import partial
 from scipy.stats import rankdata
-from logger import make_logger
+from .logger import make_logger
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
@@ -48,7 +48,8 @@ class Report(object):
         fs = {key: np.array(val).squeeze()
               for key, val in coefs.items()
               if val[0] is not None}
-
+        if len(list(fs.keys())) == 0:
+            return []
         n_coefs = fs[list(fs.keys())[0]].shape[-1]
         if coef_names is None:
             coef_names = np.array([str(c + 1) for c in range(n_coefs)])
@@ -65,8 +66,13 @@ class Report(object):
             mean = np.mean(val, axis=0)
             std = np.std(val, axis=0)
             idx = np.argsort(np.abs(mean))
-            topm = mean[idx][-ntop:][::-1]
-            tops = std[idx][-ntop:][::-1]
+            ntop = len(mean)
+            if np.isscalar(mean):
+                topm = mean
+                tops = std
+            else:
+                topm = mean[idx][-ntop:][::-1]
+                tops = std[idx][-ntop:][::-1]
             plt.subplot(211)
             plt.bar(range(ntop), topm, yerr=tops,
                     tick_label=(coef_names[idx][-ntop:][::-1]))
@@ -74,14 +80,19 @@ class Report(object):
             plt.xlabel('Feature index')
 
             # plotting coefficients rank
-            rank = n_coefs - np.apply_along_axis(
-                partial(rankdata, method='max'), axis=1, arr=np.abs(val))
-            rank_mean = rank.mean(axis=0)
-            rank_std = rank.std(axis=0)
-            idx = np.argsort(rank_mean)
-            topm = rank_mean[idx][:ntop]
-            tops = rank_std[idx][:ntop]
-
+            if np.isscalar(mean):
+                rank_mean = 1
+                rank_std = 1
+                topm = mean
+                tops = std
+            else:
+                rank = n_coefs - np.apply_along_axis(
+                    partial(rankdata, method='max'), axis=1, arr=np.abs(val))
+                rank_mean = rank.mean(axis=0)
+                rank_std = rank.std(axis=0)
+                idx = np.argsort(rank_mean)
+                topm = rank_mean[idx][:ntop]
+                tops = rank_std[idx][:ntop]
             plt.subplot(212)
             plt.bar(range(ntop), topm, yerr=tops,
                     tick_label=coef_names[idx][:ntop])
