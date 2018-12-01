@@ -232,7 +232,6 @@ def build_classifiers(include, scale, feature_selection, nCols):
             'clf': GaussianProcessClassifier(),
             'parameters': {}}
 
-
     # classifiers['Voting'] = {}
 
     def name(x):
@@ -279,26 +278,26 @@ def build_regressors(include, scale, feature_selection, nCols):
 
     if 'Linear Regression' in include:
         regressors['Linear Regression'] = {
-            'reg': LinearRegression(),
+            'clf': LinearRegression(),
             'parameters': {}  # Best to leave default parameters
         }
 
     if 'Bayesian Ridge' in include:
         regressors['Bayesian Ridge'] = {
-            'reg': BayesianRidge(),
+            'clf': BayesianRidge(),
             'parameters': {}  # Investigate if alpha and lambda parameters should be changed
         }
 
     if 'PassiveAggressiveRegressor' in include:
         regressors['PassiveAggressiveRegressor'] = {
-            'reg': PassiveAggressiveRegressor(),
+            'clf': PassiveAggressiveRegressor(),
             'parameters': {'C': [0.5, 1.0, 1.5]
                            }
         }
 
     if 'GaussianProcessRegressor' in include:
         regressors['GaussianProcessRegressor'] = {
-            'reg': GaussianProcessRegressor(),
+            'clf': GaussianProcessRegressor(),
             'parameters': {
                 'alpha': [0.01, 0.1, 1.0, 10.0],
                 'kernel': [RBF(x) for x in [0.01, 1.0, 100.0, 1000.0]],
@@ -307,7 +306,7 @@ def build_regressors(include, scale, feature_selection, nCols):
 
     if 'Ridge' in include:
         regressors['Ridge'] = {
-            'reg': Ridge(),
+            'clf': Ridge(),
             'parameters': {
                 'alpha': [0.25, 0.50, 0.75, 1.00]
             }
@@ -315,7 +314,7 @@ def build_regressors(include, scale, feature_selection, nCols):
 
     if 'Lasso' in include:
         regressors['Lasso'] = {
-            'reg': Lasso(),
+            'clf': Lasso(),
             'parameters': {
                 'alpha': [0.25, 0.50, 0.75, 1.00]
             }
@@ -323,68 +322,68 @@ def build_regressors(include, scale, feature_selection, nCols):
 
     if 'Lars' in include:
         regressors['Lars'] = {
-            'reg': Lars(),
+            'clf': Lars(),
             'parameters': {}  # Best to leave the default parameters
         }
 
     if 'LassoLars' in include:
         regressors['LassoLars'] = {
-            'reg': LassoLars(),
+            'clf': LassoLars(),
             'parameters': {'alpha': [0.25, 0.50, 0.75, 1.00, 10.0]}
         }
 
     if 'OrthogonalMatchingPursuit' in include:
         regressors['OrthogonalMatchingPursuit'] = {
-            'reg': OrthogonalMatchingPursuit(),
+            'clf': OrthogonalMatchingPursuit(),
             'parameters': {}  # Best to leave default parameters
         }
 
     if 'ElasticNet' in include:
         regressors['ElasticNet'] = {
-            'reg': ElasticNet(),
+            'clf': ElasticNet(),
             'parameters': {'alpha': [0.25, 0.50, 0.75, 1.00],
                            'l1_ratio': [0.25, 0.50, 0.75, 1.00]}
         }
 
     if 'ARD Regression' in include:
         regressors['ARD Regression'] = {
-            'reg': ARDRegression(),
+            'clf': ARDRegression(),
             'parameters': {}  # Best to leave default parameters
         }
 
     if 'Huber Regression' in include:
         regressors['Huber Regression'] = {
-            'reg': HuberRegressor(),
+            'clf': HuberRegressor(),
             'parameters': {}  # Best to leave default parameters
         }
 
     if 'RANSAC Regression' in include:
         regressors['RANSAC Regression'] = {
-            'reg': RANSACRegressor(),
+            'clf': RANSACRegressor(),
             'parameters': {}  # Best to leave default parameters
         }
 
     if 'SGD Regression' in include:
         regressors['SGD Regression'] = {
-            'reg': SGDRegressor(),
+            'clf': SGDRegressor(),
             'parameters': {}  # Best to leave default parameters
         }
 
     if 'TheilSen Regression' in include:
         regressors['TheilSen Regression'] = {
-            'reg': TheilSenRegressor(),
+            'clf': TheilSenRegressor(),
             'parameters': {}  # Best to leave default parameters
         }
 
     if 'MLP Regression' in include:
         regressors['MLP Regression'] = {
-            'reg': MLPRegressor(),
+            'clf': MLPRegressor(),
             'parameters': {}  # Best to leave default parameters
         }
 
     if 'KNN Regression' in include:
         regressors['KNN Regression'] = {
-            'reg': KNeighborsRegressor(),
+            'clf': KNeighborsRegressor(),
             'parameters': {}  # Best to leave default parameters
         }
 
@@ -393,7 +392,7 @@ def build_regressors(include, scale, feature_selection, nCols):
         :param x: The name of the regressor
         :return: The class of the final regression estimator in lower case form
         """
-        return x['reg']._final_estimator.__class__.__name__.lower()
+        return x['clf']._final_estimator.__class__.__name__.lower()
 
     for key, val in regressors.items():
         if not scale and not feature_selection:
@@ -403,8 +402,8 @@ def build_regressors(include, scale, feature_selection, nCols):
             steps.append(StandardScaler())
         if feature_selection:
             steps.append(SelectKBest(f_regression, k='all'))
-        steps.append(regressors[key]['reg'])
-        regressors[key]['reg'] = make_pipeline(*steps)
+        steps.append(regressors[key]['clf'])
+        regressors[key]['clf'] = make_pipeline(*steps)
         # Reorganize paramenter list for grid search
         new_dict = {}
         for keyp in regressors[key]['parameters']:

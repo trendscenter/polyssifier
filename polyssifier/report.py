@@ -1,7 +1,7 @@
 import os
 from functools import partial
 from scipy.stats import rankdata
-from .logger import make_logger
+from logger import make_logger
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,7 +16,7 @@ class Report(object):
 
     def __init__(self, scores, confusions, predictions,
                  test_prob, coefficients, feature_selection,
-                 scoring='auc', include=None, pathname="temp"):
+                 scoring='auc', include=None, pathname="temp", save=False):
         self.scores = scores
         self.confusions = confusions
         self.test_proba = test_prob
@@ -25,7 +25,9 @@ class Report(object):
         self._feature_selection = feature_selection
         self.include = include
         self.pathname = pathname
-        self.figures = [self.plot_scores()] + self.plot_features()
+        self.figures = []
+        if save:
+            self.figures = [self.plot_scores()] + self.plot_features()
 
     def plot_scores(self):
         return self.plot_scores_a(self.scores, self.scoring)

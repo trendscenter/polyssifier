@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+from sklearn.datasets import make_regression, load_diabetes
 import sys
 import numpy as np
 import pickle as p
@@ -13,30 +14,31 @@ from sklearn.externals import joblib
 import time
 from sklearn.preprocessing import LabelEncoder
 from itertools import starmap
-from .poly_utils import (build_classifiers, MyVoter, build_regressors,
-                         MyRegressionMedianer)
-from .report import Report
-from .logger import make_logger
-from .default_include import DEFAULT_include
-from .polysis import polysis
+from poly_utils import (build_classifiers, MyVoter, build_regressors,
+                        MyRegressionMedianer)
+from report import Report
+from logger import make_logger
+from default_include import DEFAULT_include
+from polysis import Polysis
 
 sys.setrecursionlimit(10000)
 logger = make_logger('polygressor')
 
 PERMITTED_SCORINGS = ['r2', 'mse']
-DEFAULT_do_regress=False
+DEFAULT_do_regress = False
 DEFAULT_n_folds = 2
 DEFAULT_scale = True
 DEFAULT_feature_selection = False
 DEFAULT_save = True
 DEFAULT_scoring = 'r2'
-DEFAULT_project_name=''
+DEFAULT_project_name = ''
 DEFAULT_concurrency = 1
 DEFAULT_verbose = True
 DEFAULT_num_degrees = 1
 DEFAULT_path = '.'
 
-class Polygressor(polysis):
+
+class Polygressor(Polysis):
     """Polyssifier - wrapper for sklearn classifiers and regressors.
        Run multiple models on data, and output a report.
 
@@ -52,7 +54,7 @@ class Polygressor(polysis):
        | verbose      | verbose out   | boolean     | any boolean       |
        | num_degrees  |degree of poly | int         | any int           |
     """
-    
+
     def __init__(self, data, label, do_regress=DEFAULT_do_regress,
                  n_folds=DEFAULT_n_folds, scale=DEFAULT_scale,
                  include=DEFAULT_include,
@@ -62,9 +64,9 @@ class Polygressor(polysis):
                  concurrency=DEFAULT_concurrency, verbose=DEFAULT_verbose,
                  num_degrees=DEFAULT_num_degrees, path=DEFAULT_path):
         super(Polygressor, self).__init__(data, label, n_folds=n_folds, scale=scale,
-        include=include, feature_selection=feature_selection, save=save, scoring=scoring,
-        project_name=project_name, concurrency=concurrency, verbose=verbose,
-        num_degrees=num_degrees, path=path)
+                                          include=include, feature_selection=feature_selection, save=save, scoring=scoring,
+                                          project_name=project_name, concurrency=concurrency, verbose=verbose,
+                                          num_degrees=num_degrees, path=path)
         if self.scoring not in PERMITTED_SCORINGS:
             self.scoring = PERMITTED_SCORINGS[0]
 
@@ -74,7 +76,7 @@ class Polygressor(polysis):
                                        random_state=1988)
         self.finalize_folds()
 
-    def build_models(self):
+    def initialize_models(self):
         """Overrides abstract method"""
         logger.info('Building regressors ...')
         self.models = build_regressors(self.include,
@@ -92,7 +94,7 @@ class Polygressor(polysis):
             clfs = self.fitted_models[clf_name]
             for n in range(self.n_folds):
                 train_score, test_score, prediction, prob,\
-                        coefs, fitted_model = self.result.pop(0)
+                    coefs, fitted_model = self.result.pop(0)
                 clfs.append(fitted_model)
                 self.scores.loc[n, (clf_name, 'train')] = train_score
                 self.scores.loc[n, (clf_name, 'test')] = test_score
@@ -114,15 +116,15 @@ class Polygressor(polysis):
             r squared value.
         '''
         if self.scoring == 'mse':
-            return mean_squared_error(y, reg.predict(X))
+            return mean_squared_error(y, clf.predict(X))
         else:
-            return r2_score(y, reg.predict(X))
+            return r2_score(y, clf.predict(X))
 
     def aggregate_results(self):
         """Overrides abstract method"""
         self.compute_median()
 
-    def feature_importance(self, clf):)
+    def feature_importance(self, clf):
         # Feature importance
         if hasattr(clf, 'steps'):
             temp = clf.steps[-1][1]
@@ -150,10 +152,20 @@ class Polygressor(polysis):
         for n, (train, test) in enumerate(self.k_fold):
             reg = MyRegressionMedianer(self.fitted_models.loc[n].values)
             X, y = self.data[train, :], self.label[train]
-            self.scores.loc[n, ('Median', 'train')] = self._reg_scorer(reg, X,
-                            y, self.scoring)
+            self.scores.loc[n, ('Median', 'train')] = self._scorer(reg, X,
+                                                                   y)
             X, y = self.data[test, :], self.label[test]
-            self.scores.loc[n, ('Median', 'test')] = self._reg_scorer(reg, X,
-                            y, self.scoring)
+            self.scores.loc[n, ('Median', 'test')] = self._scorer(reg, X,
+                                                                  y)
             temp_pred[test] = reg.predict(X)
         self.predictions['Median'] = temp_pred
+
+
+if __name__ == "__main__":
+    NSAMPLES = 10000
+    data, label = load_diabetes(return_X_y=True)
+    poly = Polygressor(data, label, n_folds=5, verbose=1,
+                       feature_selection=False,
+                       save=False, project_name='polygressor_runtest')
+    poly.build()
+    poly.run()

@@ -5,7 +5,6 @@ import pickle as p
 from multiprocessing import Manager, Pool
 import os
 import pandas as pd
-from abc import 
 from copy import deepcopy
 from sklearn.model_selection import StratifiedKFold, GridSearchCV, KFold
 from sklearn.metrics import (f1_score, confusion_matrix, roc_auc_score,
@@ -14,26 +13,27 @@ from sklearn.externals import joblib
 import time
 from sklearn.preprocessing import LabelEncoder
 from itertools import starmap
-from .poly_utils import (build_classifiers, MyVoter, build_regressors,
-                         MyRegressionMedianer)
-from .report import Report
-from .logger import make_logger
-from abc import abstractmethod, ABC
+from poly_utils import (build_classifiers, MyVoter, build_regressors,
+                        MyRegressionMedianer)
+from default_include import DEFAULT_include
+from report import Report
+from logger import make_logger
+from abc import ABC, abstractmethod
 sys.setrecursionlimit(10000)
 logger = make_logger('polyssifier')
 
-PERMITTED_SCORINGS = {'classifier': ['auc'], 'regress': ['r2', 'mse']}
-DEFAULT_do_regress=False
-DEFAULT_n_folds = 10
+PERMITTED_SCORINGS = []
+DEFAULT_n_folds = 2
 DEFAULT_scale = True
-DEFAULT_exclude = []
 DEFAULT_feature_selection = False
-DEFAULT_save = False
-DEFAULT_scoring = 'auc'
-DEFAULT_project_name=''
+DEFAULT_save = True
+DEFAULT_scoring = ''
+DEFAULT_project_name = 'polysis'
 DEFAULT_concurrency = 1
 DEFAULT_verbose = True
 DEFAULT_num_degrees = 1
+DEFAULT_path = '.'
+
 
 class Polysis(ABC):
     """Polysis - Abstract baseclass for Polyssifier, Polygressor,
@@ -51,23 +51,23 @@ class Polysis(ABC):
        | verbose      | verbose out   | boolean     | any boolean       |
        | num_degrees  |degree of poly | int         | any int           |
     """
-    
+
     def __init__(self, data, label,
                  n_folds=DEFAULT_n_folds, scale=DEFAULT_scale,
-                 exclude=DEFAULT_exclude,
+                 include=DEFAULT_include,
                  feature_selection=DEFAULT_feature_selection,
                  save=DEFAULT_save, scoring=DEFAULT_scoring,
                  project_name=DEFAULT_project_name,
                  concurrency=DEFAULT_concurrency, verbose=DEFAULT_verbose,
-                 num_degrees=DEFAULT_num_degrees):
+                 num_degrees=DEFAULT_num_degrees, path=DEFAULT_path):
         assert label.shape[0] == data.shape[0],\
-        "Label dimesions do not match data number of rows"
+            "Label dimesions do not match data number of rows"
         self.data = data
         self.label = label
         self.n_class = len(np.unique(label))
         self.n_folds = n_folds
         self.scale = scale
-        self.exclude = exclude
+        self.include = include
         self.feature_selection = feature_selection
         self.save = save
         self.scoring = scoring
@@ -76,6 +76,7 @@ class Polysis(ABC):
         self.verbose = verbose
         self.data = data
         self.num_degrees = num_degrees
+        self.path = path
         self.confusions = {}
         self.coefficients = {}
 
@@ -104,8 +105,9 @@ class Polysis(ABC):
         pass
 
     def create_project(self):
-        if self.save and not os.path.exists('poly_{}/models'.format(self.project_name)):
-            os.makedirs('poly_{}/models'.format(self.project_name))
+        if self.save and not os.path.exists(os.path.join(self.path, '{}/models').format(self.project_name)):
+            os.makedirs(os.path.join(
+                self.path, '{}/models').format(self.project_name))
 
     def initialize_scores(self):
         logger.info('Initializing scores...')
@@ -133,12 +135,13 @@ class Polysis(ABC):
         self.initialize_models()
         self.initialize_scores()
         self.initialize_predictions()
+        self.initialize_probabilities()
         self.initialize_folds()
         self.finalize_folds()
         # Arg storage
         logger.info('Storing input...')
         self.manager = Manager()
-        self.process_args()    
+        self.process_args()
         logger.info('Building complete..')
 
     def run(self):
@@ -157,34 +160,34 @@ class Polysis(ABC):
         self.save_results()
         self.print_scores()
 
-    def score_model(self, X, y, val):
-        start = time.time()
-        clf = deepcopy(val['clf'])
-        if val['parameters']:
-            clf = GridSearchCV(clf, val['parameters'], n_jobs=1, cv=3,
-                                scoring=self._scorer)
-        clf.fit(X, y)
-        return self._scorer(clf, X, y)
-
-    def get_xy(self, indices):
+    def get_xy(self, args, indices):
         X = args[0]['X'][indices, :]
         y = args[0]['y'][indices]
         return X, y
 
     def fit_model(self, args, name, val, n_fold, project_name, save, scoring):
+        start = time.time()
         train, test = args[0]['k_fold'][n_fold]
-        logger.info('Training {} {}'.format(clf_name, n_fold))
-        X, y = self.get_xy(train)
-        train_score = self.score_model(self, X, y, val)
-        logger.info('Testing {} {}'.format(clf_name, n_fold))
-        X, y = self.get_xy(test)
-        test_score = self.score_model(self, X, y, val)
+        clf = deepcopy(val['clf'])
+        if val['parameters']:
+            clf = GridSearchCV(clf, val['parameters'], n_jobs=1, cv=3,
+                               scoring=self._scorer)
+
+        logger.info('Training {} {}'.format(name, n_fold))
+        X, y = self.get_xy(args, train)
+        clf.fit(X, y)
+        train_score = self._scorer(clf, X, y)
+
+        logger.info('Testing {} {}'.format(name, n_fold))
+        X, y = self.get_xy(args, test)
+        test_score = self._scorer(clf, X, y)
         ypred = clf.predict(X)
         yprob = 0
-        duration = time.time() - start    
+        duration = time.time() - start
+
         logger.info('{0:25} {1:2}: Train {2:.2f}/Test {3:.2f}, {4:.2f} sec'.format(
-            clf_name, n_fold, train_score, test_score, duration))
-                # Feature importance
+            name, n_fold, train_score, test_score, duration))
+        # Feature importance
         coefficients = self.feature_importance(clf)
         return (train_score, test_score,
                 ypred, yprob,  # predictions and probabilities
@@ -198,8 +201,8 @@ class Polysis(ABC):
                              predictions=self.predictions,
                              test_prob=self.test_prob, scoring=self.scoring,
                              coefficients=self.coefficients,
-                             feature_selection=self.feature_selection)
-        self.format_report_summary() 
+                             feature_selection=self.feature_selection, save=self.save)
+        self.format_report_summary()
 
     def save_results(self):
         if self.save:
@@ -213,7 +216,7 @@ class Polysis(ABC):
         if self.verbose:
             print(self.scores.astype('float').describe().transpose()
                   [['mean', 'std', 'min', 'max']])
-        
+
     def process_args(self):
         '''
             Process input, and store in two variables:
@@ -227,7 +230,7 @@ class Polysis(ABC):
             for n_fold in range(self.n_folds):
                 self.args2.append((self.args, model_name, val, n_fold,
                                    self.project_name,
-                              self.save, self.scoring))
+                                   self.save, self.scoring))
         self.shared = self.args[0]
         self.shared['k_fold'] = self.k_fold
         self.shared['X'] = self.data
@@ -249,25 +252,25 @@ class Polysis(ABC):
     def _save_object(self, fname, obj):
         '''dump object to pickle'''
         with open(fname, 'wb') as f:
-                p.dump(obj, f, protocol=2)
-    
+            p.dump(obj, f, protocol=2)
+
     def create_polynomial(self, data, degree):
         '''
         :param data: the data (numpy matrix) which will have its data vectors raised to powers
         :param degree: the degree of the polynomial we wish to predict
         :return: a new data matrix of the specified degree (for polynomial fitting purposes)
         '''
-    
+
         # First we make an empty matrix which is the size of what we wish to pass through to linear regress
         height_of_pass_through = data.shape[0]
         width_of_pass_through = degree * data.shape[1]
         to_pass_through = np.zeros(
             shape=(height_of_pass_through, width_of_pass_through))
-    
+
         # These are the width and height of each "exponeneted" matrix
         height_exponential_matrix = data.shape[0]
         width_exponential_matrix = data.shape[1]
-    
+
         for i in range(degree):
             to_add_in = data ** (i + 1)
             for j in range(height_exponential_matrix):
@@ -282,17 +285,22 @@ class Polysis(ABC):
         test_cols = [col for col in self.scores.columns if 'test' in col]
         train_scores = self.scores[train_cols]
         test_scores = self.scores[test_cols]
-        headers = [['', 'Mean %s' % self.scoring, 'std %s' % self.scoring, 'Min %s' % self.scoring, 'Max %s' % self.scoring]]
-        train_summary = train_scores.astype('float').describe().transpose()[['mean', 'std', 'min', 'max']]
+        headers = [['', 'Mean %s' % self.scoring, 'std %s' %
+                    self.scoring, 'Min %s' % self.scoring, 'Max %s' % self.scoring]]
+        train_summary = train_scores.astype('float').describe().transpose()[
+            ['mean', 'std', 'min', 'max']]
         train_summary = train_summary.sort_values('mean', ascending=False)
         train_summary = train_summary.round(4)
 
-        test_summary = test_scores.astype('float').describe().transpose()[['mean', 'std', 'min', 'max']]
+        test_summary = test_scores.astype('float').describe().transpose()[
+            ['mean', 'std', 'min', 'max']]
         test_summary = test_summary.sort_values('mean', ascending=False)
         test_summary = test_summary.round(4)
 
-        self.report.summary = {0:headers+[list(s) for s in train_summary.itertuples()]
-        +[['','','','','']]+[list(s) for s in test_summary.itertuples()]}
+        self.report.summary = {0: headers+[list(s) for s in train_summary.itertuples()]
+                               + [['', '', '', '', '']]+[list(s) for s in test_summary.itertuples()]}
 
-        self.report.train_summary = {0: headers + [list(s) for s in train_summary.itertuples()]}
-        self.report.test_summary = {0:headers+[list(s) for s in test_summary.itertuples()]}
+        self.report.train_summary = {
+            0: headers + [list(s) for s in train_summary.itertuples()]}
+        self.report.test_summary = {
+            0: headers+[list(s) for s in test_summary.itertuples()]}
