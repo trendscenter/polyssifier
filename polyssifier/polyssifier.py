@@ -14,12 +14,12 @@ from sklearn.externals import joblib
 import time
 from sklearn.preprocessing import LabelEncoder
 from itertools import starmap
-from poly_utils import (build_classifiers, MyVoter, build_regressors,
+from .poly_utils import (build_classifiers, MyVoter, build_regressors,
                         MyRegressionMedianer)
-from report import Report
-from logger import make_logger
-from default_include import DEFAULT_include
-from polysis import Polysis
+from .report import Report
+from .logger import make_logger
+from .default_include import DEFAULT_include
+from .polysis import Polysis
 
 sys.setrecursionlimit(10000)
 logger = make_logger('polyssifier')
