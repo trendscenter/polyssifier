@@ -1,12 +1,12 @@
 import os
+import matplotlib
+matplotlib.use('TkAgg')
 from functools import partial
 from scipy.stats import rankdata
 from .logger import make_logger
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
-import matplotlib
-matplotlib.use('TkAgg')
 log = make_logger('Report')
 
 
