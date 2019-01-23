@@ -170,7 +170,7 @@ class Polyssifier(Polysis):
 
     def aggregate_results(self):
         """Overrides abstract method"""
-        self.perform_voting()
+        pass
 
     def perform_voting(self):
         self.fitted_models = pd.DataFrame(self.fitted_models)
