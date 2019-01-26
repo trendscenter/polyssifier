@@ -15,14 +15,13 @@ import time
 from sklearn.preprocessing import LabelEncoder
 from itertools import starmap
 from .poly_utils import (build_classifiers, MyVoter, build_regressors,
-                        MyRegressionMedianer)
+                         MyRegressionMedianer)
 from .report import Report
 from .logger import make_logger
 from .default_include import DEFAULT_include
 from .polysis import Polysis
 
 sys.setrecursionlimit(10000)
-logger = make_logger('polyssifier')
 
 PERMITTED_SCORINGS = ["auc"]
 DEFAULT_do_regress = False
@@ -55,18 +54,23 @@ class Polyssifier(Polysis):
        | num_degrees  |degree of poly | int         | any int           |
     """
 
-    def __init__(self, data, label, do_regress=DEFAULT_do_regress,
-                 n_folds=DEFAULT_n_folds, scale=DEFAULT_scale,
+    def __init__(self, data, label,
+                 n_folds=DEFAULT_n_folds,
+                 scale=DEFAULT_scale,
                  include=DEFAULT_include,
                  feature_selection=DEFAULT_feature_selection,
-                 save=DEFAULT_save, scoring=DEFAULT_scoring,
+                 save=DEFAULT_save,
+                 scoring=DEFAULT_scoring,
                  project_name=DEFAULT_project_name,
-                 concurrency=DEFAULT_concurrency, verbose=DEFAULT_verbose,
-                 num_degrees=DEFAULT_num_degrees, path=DEFAULT_path):
+                 concurrency=DEFAULT_concurrency,
+                 verbose=DEFAULT_verbose,
+                 num_degrees=DEFAULT_num_degrees,
+                 path=DEFAULT_path,
+                 logger=None):
         super(Polyssifier, self).__init__(data, label, n_folds=n_folds, scale=scale,
                                           include=include, feature_selection=feature_selection, save=save, scoring=scoring,
                                           project_name=project_name, concurrency=concurrency, verbose=verbose,
-                                          num_degrees=num_degrees, path=path)
+                                          num_degrees=num_degrees, path=path, logger=logger)
         if self.scoring not in PERMITTED_SCORINGS:
             self.scoring = PERMITTED_SCORINGS[0]
 
@@ -78,7 +82,7 @@ class Polyssifier(Polysis):
 
     def initialize_models(self):
         """Overrides abstract method"""
-        logger.info('Building classifiers ...')
+        self.logger.info('Building classifiers ...')
         self._le = LabelEncoder()
         self._le.fit(self.label)
         self.label = self._le.transform(self.label)
@@ -154,7 +158,7 @@ class Polyssifier(Polysis):
                 try:
                     ypred = ypred[:, 1]
                 except:
-                    logger.info(
+                    self.logger.info(
                         'predict proba return shape{}'.format(ypred.shape))
 
                 assert(len(ypred.shape) == 1)
@@ -199,14 +203,14 @@ class Polyssifier(Polysis):
             try:
                 yprob = yprob[:, 1]
             except:
-                logger.info(
+                self.logger.info(
                     'predict proba return shape {}'.format(yprob.shape))
         elif hasattr(clf, 'decision_function'):
             yprob = clf.decision_function(X)
             try:
                 yprob = yprob[:, 1]
             except:
-                logger.info(
+                self.logger.info(
                     'predict proba return shape {}'.format(yprob.shape))
             assert len(yprob.shape) == 1,\
                 'predict proba return shape {}'.format(ypred.shape)

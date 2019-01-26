@@ -20,7 +20,7 @@ from .report import Report
 from .logger import make_logger
 from abc import ABC, abstractmethod
 sys.setrecursionlimit(10000)
-logger = make_logger('polyssifier')
+#logger = make_logger('polyssifier')
 
 PERMITTED_SCORINGS = []
 DEFAULT_n_folds = 2
@@ -53,13 +53,18 @@ class Polysis(ABC):
     """
 
     def __init__(self, data, label,
-                 n_folds=DEFAULT_n_folds, scale=DEFAULT_scale,
+                 n_folds=DEFAULT_n_folds,
+                 scale=DEFAULT_scale,
                  include=DEFAULT_include,
                  feature_selection=DEFAULT_feature_selection,
-                 save=DEFAULT_save, scoring=DEFAULT_scoring,
+                 save=DEFAULT_save,
+                 scoring=DEFAULT_scoring,
                  project_name=DEFAULT_project_name,
-                 concurrency=DEFAULT_concurrency, verbose=DEFAULT_verbose,
-                 num_degrees=DEFAULT_num_degrees, path=DEFAULT_path):
+                 concurrency=DEFAULT_concurrency,
+                 verbose=DEFAULT_verbose,
+                 num_degrees=DEFAULT_num_degrees,
+                 path=DEFAULT_path,
+                 logger=None):
         assert label.shape[0] == data.shape[0],\
             "Label dimesions do not match data number of rows"
         self.data = data
@@ -81,6 +86,10 @@ class Polysis(ABC):
         self.confusions = {}
         self.coefficients = {}
         self.models = {}
+        if logger is not None:
+            self.logger = logger
+        else:
+            self.logger = make_logger('polyssifier')
 
     @abstractmethod
     def initialize_folds(self):
@@ -112,18 +121,18 @@ class Polysis(ABC):
                 self.path, '{}/models').format(self.project_name))
 
     def initialize_scores(self):
-        logger.info('Initializing scores...')
+        self.logger.info('Initializing scores...')
         self.scores = pd.DataFrame(columns=pd.MultiIndex.from_product(
             [self.models.keys(), ['train', 'test']]),
             index=range(self.n_folds))
 
     def initialize_predictions(self):
-        logger.info('Initializing predictions...')
+        self.logger.info('Initializing predictions...')
         self.predictions = pd.DataFrame(columns=self.models.keys(),
                                         index=range(self.data.shape[0]))
 
     def initialize_probabilities(self):
-        logger.info('Initializing test probabilities...')
+        self.logger.info('Initializing test probabilities...')
         self.test_prob = pd.DataFrame(columns=self.models.keys(),
                                       index=range(self.data.shape[0]))
 
@@ -141,19 +150,19 @@ class Polysis(ABC):
         self.initialize_folds()
         self.finalize_folds()
         # Arg storage
-        logger.info('Storing input...')
+        self.logger.info('Storing input...')
         self.manager = Manager()
         self.process_args()
-        logger.info('Building complete..')
+        self.logger.info('Building complete..')
 
     def run(self):
-        logger.info('Running polyssifier.')
+        self.logger.info('Running polyssifier.')
 
         # Parallel Processing of tasks
-        logger.info('Fitting models...')
+        self.logger.info('Fitting models...')
         self.fit_all_models()
         # Gather results
-        logger.info('Gathering model results...')
+        self.logger.info('Gathering model results...')
         self.fitted_models = {key: [] for key in self.models}
         self.gather_results()
         # Aggregate results
@@ -175,19 +184,19 @@ class Polysis(ABC):
             clf = GridSearchCV(clf, val['parameters'], n_jobs=1, cv=3,
                                scoring=self._scorer)
 
-        logger.info('Training {} {}'.format(name, n_fold))
+        self.logger.info('Training {} {}'.format(name, n_fold))
         X, y = self.get_xy(args, train)
         clf.fit(X, y)
         train_score = self._scorer(clf, X, y)
 
-        logger.info('Testing {} {}'.format(name, n_fold))
+        self.logger.info('Testing {} {}'.format(name, n_fold))
         X, y = self.get_xy(args, test)
         test_score = self._scorer(clf, X, y)
         ypred = clf.predict(X)
         yprob = 0
         duration = time.time() - start
 
-        logger.info('{0:25} {1:2}: Train {2:.2f}/Test {3:.2f}, {4:.2f} sec'.format(
+        self.logger.info('{0:25} {1:2}: Train {2:.2f}/Test {3:.2f}, {4:.2f} sec'.format(
             name, n_fold, train_score, test_score, duration))
         # Feature importance
         coefficients = self.feature_importance(clf)
@@ -198,7 +207,7 @@ class Polysis(ABC):
 
     def generate_report(self):
         # Report generation
-        logger.info('Generating report...')
+        self.logger.info('Generating report...')
         self.report = Report(scores=self.scores, confusions=self.confusions,
                              predictions=self.predictions,
                              test_prob=self.test_prob, scoring=self.scoring,
@@ -209,7 +218,7 @@ class Polysis(ABC):
 
     def save_results(self):
         if self.save:
-            logger.info('Saving...')
+            self.logger.info('Saving...')
             self._save_object(self.project_path +
                               '/scores.pkl', self.scores)
             self._save_object(self.project_path +

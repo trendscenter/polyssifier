@@ -15,14 +15,13 @@ import time
 from sklearn.preprocessing import LabelEncoder
 from itertools import starmap
 from .poly_utils import (build_classifiers, MyVoter, build_regressors,
-                        MyRegressionMedianer)
+                         MyRegressionMedianer)
 from .report import Report
 from .logger import make_logger
 from .default_include import DEFAULT_include
 from .polysis import Polysis
 
 sys.setrecursionlimit(10000)
-logger = make_logger('polygressor')
 
 PERMITTED_SCORINGS = ['r2', 'mse']
 DEFAULT_do_regress = False
@@ -55,18 +54,24 @@ class Polygressor(Polysis):
        | num_degrees  |degree of poly | int         | any int           |
     """
 
-    def __init__(self, data, label, do_regress=DEFAULT_do_regress,
-                 n_folds=DEFAULT_n_folds, scale=DEFAULT_scale,
+    def __init__(self, data, label,
+                 do_regress=DEFAULT_do_regress,
+                 n_folds=DEFAULT_n_folds,
+                 scale=DEFAULT_scale,
                  include=DEFAULT_include,
                  feature_selection=DEFAULT_feature_selection,
-                 save=DEFAULT_save, scoring=DEFAULT_scoring,
+                 save=DEFAULT_save,
+                 scoring=DEFAULT_scoring,
                  project_name=DEFAULT_project_name,
-                 concurrency=DEFAULT_concurrency, verbose=DEFAULT_verbose,
-                 num_degrees=DEFAULT_num_degrees, path=DEFAULT_path):
+                 concurrency=DEFAULT_concurrency,
+                 verbose=DEFAULT_verbose,
+                 num_degrees=DEFAULT_num_degrees,
+                 path=DEFAULT_path,
+                 logger=None):
         super(Polygressor, self).__init__(data, label, n_folds=n_folds, scale=scale,
                                           include=include, feature_selection=feature_selection, save=save, scoring=scoring,
                                           project_name=project_name, concurrency=concurrency, verbose=verbose,
-                                          num_degrees=num_degrees, path=path)
+                                          num_degrees=num_degrees, path=path, logger=logger)
         if self.scoring not in PERMITTED_SCORINGS:
             self.scoring = PERMITTED_SCORINGS[0]
 
@@ -78,7 +83,7 @@ class Polygressor(Polysis):
 
     def initialize_models(self):
         """Overrides abstract method"""
-        logger.info('Building regressors ...')
+        self.logger.info('Building regressors ...')
         self.models = build_regressors(self.include,
                                        self.scale,
                                        self.feature_selection,
