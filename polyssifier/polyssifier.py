@@ -66,11 +66,12 @@ class Polyssifier(Polysis):
                  verbose=DEFAULT_verbose,
                  num_degrees=DEFAULT_num_degrees,
                  path=DEFAULT_path,
-                 logger=None):
+                 logger=None,
+                 **kwargs):
         super(Polyssifier, self).__init__(data, label, n_folds=n_folds, scale=scale,
                                           include=include, feature_selection=feature_selection, save=save, scoring=scoring,
                                           project_name=project_name, concurrency=concurrency, verbose=verbose,
-                                          num_degrees=num_degrees, path=path, logger=logger)
+                                          num_degrees=num_degrees, path=path, logger=logger, **kwargs)
         if self.scoring not in PERMITTED_SCORINGS:
             self.scoring = PERMITTED_SCORINGS[0]
 
@@ -169,7 +170,7 @@ class Polyssifier(Polysis):
                 ypred = clf.predict(X)
             score = roc_auc_score(y, ypred)
         else:
-            score = f1_score(y, clf.predict(X))
+            score = f1_score(y, clf.predict(X), average='weighted')
         return score
 
     def aggregate_results(self):

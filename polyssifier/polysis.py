@@ -83,6 +83,7 @@ class Polysis(ABC):
         self.num_degrees = num_degrees
         self.path = path
         self.project_path = os.path.join(self.path, self.project_name)
+        os.makedirs(self.project_path, exist_ok=True)
         self.confusions = {}
         self.coefficients = {}
         self.models = {}
