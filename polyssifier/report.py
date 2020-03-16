@@ -1,12 +1,12 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from .logger import make_logger
+from scipy.stats import rankdata
+from functools import partial
 import os
 import matplotlib
 matplotlib.use('TkAgg')
-from functools import partial
-from scipy.stats import rankdata
-from .logger import make_logger
-import matplotlib.patches as mpatches
-import matplotlib.pyplot as plt
-import numpy as np
 log = make_logger('Report')
 
 
@@ -45,9 +45,14 @@ class Report(object):
 
     def plot_features_a(self, coefs, coef_names=None,
                         ntop=3, file_name='temp'):
-        fs = {key: np.array(val).squeeze()
-              for key, val in coefs.items()
-              if val[0] is not None}
+        fs = {}
+        for key, val in coefs.items():
+            if val[0] is not None:
+                val = np.array(val).squeeze()  # [folds, labels, coefs]
+                if len(val.shape) == 2:
+                    fs[key] = val
+                else:
+                    fs[key] = val.mean(axis=1)
         if len(list(fs.keys())) == 0:
             return []
         n_coefs = fs[list(fs.keys())[0]].shape[-1]
@@ -118,7 +123,7 @@ class Report(object):
 
         ax1 = data.plot(kind='bar', yerr=error, colormap='coolwarm',
                         figsize=(nc * 2, 5), alpha=1)
-        #ax1.set_axis_bgcolor((.7, .7, .7))
+        # ax1.set_axis_bgcolor((.7, .7, .7))
         # ax1.legend(loc='lower center', bbox_to_anchor=(0.5, 1.05),
         #           ncol=2, fancybox=True, shadow=True)
 
