@@ -6,7 +6,7 @@ from scipy.stats import rankdata
 from functools import partial
 import os
 import matplotlib
-matplotlib.use('TkAgg')
+#matplotlib.use('TkAgg')
 log = make_logger('Report')
 
 
