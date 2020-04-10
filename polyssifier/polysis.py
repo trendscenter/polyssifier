@@ -86,6 +86,7 @@ class Polysis(ABC):
         os.makedirs(self.project_path, exist_ok=True)
         self.confusions = {}
         self.coefficients = {}
+        self.cv_results = {}
         self.models = {}
         if logger is not None:
             self.logger = logger
@@ -143,8 +144,8 @@ class Polysis(ABC):
         self.k_fold = list(self.stratified_k_fold.split(
                            np.zeros(self.data.shape[0]), self.label))
 
-    def build(self):
-        self.initialize_models()
+    def build(self, params={}):
+        self.initialize_models(params=params)
         self.initialize_scores()
         self.initialize_predictions()
         self.initialize_probabilities()
@@ -182,7 +183,7 @@ class Polysis(ABC):
         train, test = args[0]['k_fold'][n_fold]
         clf = deepcopy(val['clf'])
         if val['parameters']:
-            clf = GridSearchCV(clf, val['parameters'], n_jobs=1, cv=3,
+            clf = GridSearchCV(clf, val['parameters'], n_jobs=1, cv=5,
                                scoring=self._scorer)
 
         self.logger.info('Training {} {}'.format(name, n_fold))

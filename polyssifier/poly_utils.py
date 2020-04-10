@@ -2,7 +2,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import LinearSVC, SVC, NuSVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import (RandomForestClassifier, AdaBoostClassifier,
-                              BaggingClassifier, GradientBoostingClassifier)
+                              BaggingClassifier, GradientBoostingClassifier,
+                              ExtraTreesClassifier)
 
 from sklearn.linear_model import (LogisticRegression,
                                   LinearRegression,
@@ -37,6 +38,8 @@ from sklearn.feature_selection import SelectKBest, f_regression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.gaussian_process.kernels import RBF
+
+from default_parameters import DEFAULT_parameters
 
 
 class MyVoter(object):
@@ -100,7 +103,7 @@ class MyRegressionMedianer(object):
         return avg
 
 
-def build_classifiers(include, scale, feature_selection, nCols):
+def build_classifiers(include, scale, feature_selection, nCols, params=DEFAULT_parameters):
     '''
     Input:
         - include: list of names of classifiers to include from the analysis
@@ -119,102 +122,93 @@ def build_classifiers(include, scale, feature_selection, nCols):
     if 'Multilayer Perceptron' in include:
         classifiers['Multilayer Perceptron'] = {
             'clf': MLPClassifier(),
-            'parameters': {'hidden_layer_sizes': [(100, 50), (50, 25)],
-                           'max_iter': [500]}
+            'parameters': params['Multilayer Perception']
         }
 
     '''Neighbor Methods'''
     if 'Nearest Neighbors' in include:
         classifiers['Nearest Neighbors'] = {
             'clf': KNeighborsClassifier(),
-            'parameters': {'n_neighbors': [1, 5, 10, 20]}}
+            'parameters': params['Nearest Neighbors']
 
     if 'Radius Neighbors' in include:
         classifiers['Radius Neighbors'] = {
             'clf': RadiusNeighborsClassifier(outlier_label=0),
-            'parameters': {}}
+            'parameters': params['Radius Neighbors']}
 
     '''SVM'''
     if 'SVM' in include:
         classifiers['SVM'] = {
-            'clf': SVC(C=1, probability=True, cache_size=10000,
+            'clf': SVC(probability=True, cache_size=10000,
                        class_weight='balanced'),
-            'parameters': {'kernel': ['rbf', 'poly'],
-                           'C': [0.01, 0.1, 1]}}
-
-    if 'Linear SVM' in include:
-        classifiers['Linear SVM'] = {
-            'clf': LinearSVC(dual=False, class_weight='balanced'),
-            'parameters': {'C': [0.01, 0.1, 1],
-                           'penalty': ['l1', 'l2']}}
+            'parameters': params['SVM']}
 
     '''Tree Methods'''
     if 'Decision Tree' in include:
         classifiers['Decision Tree'] = {
             'clf': DecisionTreeClassifier(max_depth=None,
                                           max_features='auto'),
-            'parameters': {}}
+            'parameters': params['Decision Tree']
 
     if 'Random Forest' in include:
         classifiers['Random Forest'] = {
-            'clf': RandomForestClassifier(max_depth=None,
-                                          n_estimators=10,
-                                          max_features='auto'),
-            'parameters': {'n_estimators': list(range(5, 20))}}
+            'clf': RandomForestClassifier(),
+            'parameters': params['Random Forest']
+            }
+
+    if 'Extra Trees' in include:
+        classifiers['Extra Trees'] = {
+            'clf': ExtraTreesClassifier(),
+            'parameters': params['Extra Trees']
+        }
 
     '''Ensemble Methods'''
     if 'Ada Boost' in include:
         classifiers['Ada Boost'] = {
             'clf': AdaBoostClassifier(),
-            'parameters': {}}
+            'parameters': params['Ada Boost']}
 
     if 'Bagging' in include:
-        classifiers['Ada Boost'] = {
+        classifiers['Bagging'] = {
             'clf': BaggingClassifier(),
-            'parameters': {}}
+            'parameters': params['Bagging']}
 
     if 'Gradient Boost' in include:
         classifiers['Gradient Boost'] = {
             'clf': GradientBoostingClassifier(),
-            'parameters': {}}
+            'parameters': params['Gradient Boost']}
 
     ''' Linear Models '''
     if 'Logistic Regression' in include:
         classifiers['Logistic Regression'] = {
-            'clf': LogisticRegression(fit_intercept=True, solver='lbfgs',
-                                      penalty='l2'),
-            'parameters': {'C': [0.001, 0.1, 1]}}
-
-    if 'Ridge Classification' in include:
-        classifiers['Ridge Classification'] = {
-            'clf': RidgeClassifier(fit_intercept=True),
-            'parameters': {}}
+            'clf': LogisticRegression(fit_intercept=True),
+            'parameters': params['Logistic Regression']}
 
     if 'Ridge Classification CV' in include:
         classifiers['Ridge Classification CV'] = {
             'clf': RidgeClassifierCV(fit_intercept=True),
-            'parameters': {}}
+            'parameters': params['Ridge Classification CV']}
 
     if 'Passive Aggressive' in include:
         classifiers['Passive Aggressive Classifier'] = {
             'clf': PassiveAggressiveClassifier(),
-            'parameters': {}}
+            'parameters': params['Passive Aggressive Classifier']}
 
     if 'Perceptron' in include:
         classifiers['Perceptron'] = {
             'clf': Perceptron(),
-            'parameters': {}}
+            'parameters': params['Perceptron']}
 
     '''Naive Bayes'''
     if 'Gaussian Naive Bayes' in include:
         classifiers['Gaussian Naive Bayes'] = {
             'clf': GaussianNB(),
-            'parameters': {}}
+            'parameters': params['Gaussian Naive Bayes']}
 
     if 'Bernoulli Naive Bayes' in include:
         classifiers['Bernoulli Naive Bayes'] = {
             'clf': BernoulliNB(),
-            'parameters': {}}
+            'parameters': params['Bernoulli Naive Bayes']}
 
     '''Discriminant Analysis'''
     if 'LDA' in include:
@@ -228,9 +222,9 @@ def build_classifiers(include, scale, feature_selection, nCols):
             'parameters': {}}
 
     if 'Gaussian Process' in include:
-        classifiers['Guassian Process'] = {
+        classifiers['Gaussian Process'] = {
             'clf': GaussianProcessClassifier(),
-            'parameters': {}}
+            'parameters': params['Gaussian Process']}
 
     # classifiers['Voting'] = {}
 

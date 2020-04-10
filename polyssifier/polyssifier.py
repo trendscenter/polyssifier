@@ -81,7 +81,7 @@ class Polyssifier(Polysis):
                                                  random_state=1988,
                                                  shuffle=True)
 
-    def initialize_models(self):
+    def initialize_models(self, params={}):
         """Overrides abstract method"""
         self.logger.info('Building classifiers ...')
         self._le = LabelEncoder()
@@ -90,12 +90,14 @@ class Polyssifier(Polysis):
         self.models = build_classifiers(self.include,
                                         self.scale,
                                         self.feature_selection,
-                                        self.data.shape[1])
+                                        self.data.shape[1],
+                                        )
 
     def gather_results(self):
         """Overrides abstract method"""
         for clf_name in self.models:
             self.coefficients[clf_name] = []
+            self.cv_results[clf_name] = []
             temp = np.zeros((self.n_class, self.n_class))
             temp_pred = np.zeros((self.data.shape[0], ))
             temp_prob = np.zeros((self.data.shape[0], ))
@@ -111,6 +113,7 @@ class Polyssifier(Polysis):
                 temp_pred[self.k_fold[n][1]
                           ] = self._le.inverse_transform(prediction)
                 self.coefficients[clf_name].append(coefs)
+                self.cv_results[clf_name].append(fitted_model.cv_results_)
             self.confusions[clf_name] = temp
             self.predictions[clf_name] = temp_pred
             self.test_prob[clf_name] = temp_prob
