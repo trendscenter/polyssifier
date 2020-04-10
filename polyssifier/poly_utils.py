@@ -39,7 +39,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.gaussian_process.kernels import RBF
 
-from default_parameters import DEFAULT_parameters
+from .default_parameters import DEFAULT_parameters
 
 
 class MyVoter(object):
@@ -122,7 +122,7 @@ def build_classifiers(include, scale, feature_selection, nCols, params=DEFAULT_p
     if 'Multilayer Perceptron' in include:
         classifiers['Multilayer Perceptron'] = {
             'clf': MLPClassifier(),
-            'parameters': params['Multilayer Perception']
+            'parameters': params['Multilayer Perceptron']
         }
 
     '''Neighbor Methods'''
@@ -130,6 +130,7 @@ def build_classifiers(include, scale, feature_selection, nCols, params=DEFAULT_p
         classifiers['Nearest Neighbors'] = {
             'clf': KNeighborsClassifier(),
             'parameters': params['Nearest Neighbors']
+        }
 
     if 'Radius Neighbors' in include:
         classifiers['Radius Neighbors'] = {
@@ -148,13 +149,13 @@ def build_classifiers(include, scale, feature_selection, nCols, params=DEFAULT_p
         classifiers['Decision Tree'] = {
             'clf': DecisionTreeClassifier(max_depth=None,
                                           max_features='auto'),
-            'parameters': params['Decision Tree']
+            'parameters': params['Decision Tree']}
 
     if 'Random Forest' in include:
         classifiers['Random Forest'] = {
             'clf': RandomForestClassifier(),
             'parameters': params['Random Forest']
-            }
+        }
 
     if 'Extra Trees' in include:
         classifiers['Extra Trees'] = {
@@ -192,7 +193,7 @@ def build_classifiers(include, scale, feature_selection, nCols, params=DEFAULT_p
     if 'Passive Aggressive' in include:
         classifiers['Passive Aggressive Classifier'] = {
             'clf': PassiveAggressiveClassifier(),
-            'parameters': params['Passive Aggressive Classifier']}
+            'parameters': params['Passive Aggressive']}
 
     if 'Perceptron' in include:
         classifiers['Perceptron'] = {

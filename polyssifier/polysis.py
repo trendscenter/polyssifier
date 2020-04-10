@@ -19,6 +19,12 @@ from .default_include import DEFAULT_include
 from .report import Report
 from .logger import make_logger
 from abc import ABC, abstractmethod
+from warnings import simplefilter
+from sklearn.utils.testing import ignore_warnings
+from sklearn.exceptions import ConvergenceWarning, FitFailedWarning, DataConversionWarning
+
+simplefilter(action='ignore', category=FutureWarning)
+simplefilter(action='ignore', category=ConvergenceWarning)
 sys.setrecursionlimit(10000)
 #logger = make_logger('polyssifier')
 
@@ -157,9 +163,13 @@ class Polysis(ABC):
         self.process_args()
         self.logger.info('Building complete..')
 
+    @ignore_warnings(category=UserWarning)
+    @ignore_warnings(category=ConvergenceWarning)
+    @ignore_warnings(category=FitFailedWarning)
     def run(self):
         self.logger.info('Running polyssifier.')
-
+        self.logger.info('Running Grid Search...')
+        self.run_all_grids()
         # Parallel Processing of tasks
         self.logger.info('Fitting models...')
         self.fit_all_models()
@@ -178,13 +188,23 @@ class Polysis(ABC):
         y = args[0]['y'][indices]
         return X, y
 
+    @ignore_warnings(category=UserWarning)
+    @ignore_warnings(category=ConvergenceWarning)
+    @ignore_warnings(category=FitFailedWarning)
+    def run_model_grid(self, name, val, project_name, save, scoring, n_jobs=32):
+        start = time.time()
+        clf = deepcopy(val['clf'])
+        clf = GridSearchCV(clf, val['parameters'], n_jobs=n_jobs, cv=self.n_folds)
+        self.logger.info('Grid Search {}'.format(name))
+        clf.fit(self.data, self.label)
+        end = time.time() - start
+        self.cv_results[name] = deepcopy(clf)
+        self.logger.info('Best Params {} Scored {} Took {} seconds'.format(clf.best_params_, clf.best_score_, end))
+
     def fit_model(self, args, name, val, n_fold, project_name, save, scoring):
         start = time.time()
         train, test = args[0]['k_fold'][n_fold]
-        clf = deepcopy(val['clf'])
-        if val['parameters']:
-            clf = GridSearchCV(clf, val['parameters'], n_jobs=1, cv=5,
-                               scoring=self._scorer)
+        clf = deepcopy(self.cv_results[name].best_estimator_)
 
         self.logger.info('Training {} {}'.format(name, n_fold))
         X, y = self.get_xy(args, train)
@@ -214,7 +234,11 @@ class Polysis(ABC):
                              predictions=self.predictions,
                              test_prob=self.test_prob, scoring=self.scoring,
                              coefficients=self.coefficients,
-                             feature_selection=self.feature_selection, save=self.save,
+                             feature_selection=self.feature_selection,
+                             models=self.fitted_models,
+                             X=self.data,
+                             y=self.label,
+                             save=self.save,
                              include=self.include, pathname=self.project_path)
         self.format_report_summary()
 
@@ -228,8 +252,10 @@ class Polysis(ABC):
 
     def print_scores(self):
         if self.verbose:
-            print(self.scores.astype('float').describe().transpose()
-                  [['mean', 'std', 'min', 'max']])
+            # print(self.scores.astype('float').describe().transpose()
+            #      [['mean', 'std', 'min', 'max']])
+            print(self.train_summary)
+            print(self.test_summary)
 
     def process_args(self):
         '''
@@ -237,20 +263,27 @@ class Polysis(ABC):
             args - just the full args
             args2 - arguments related to input models
         '''
-        self.args = self.manager.list()
+        self.args = []  # self.manager.list()
         self.args.append({})  # Store inputs
-        self.args2 = []
-        for model_name, val in self.models.items():
-            for n_fold in range(self.n_folds):
-                self.args2.append((self.args, model_name, val, n_fold,
-                                   self.project_name,
-                                   self.save, self.scoring))
+        self.args2 = []  # self.manager.list()
+        self.args_cv = []
         self.shared = self.args[0]
         self.shared['k_fold'] = self.k_fold
         self.shared['X'] = self.data
         self.shared['y'] = self.label
         self.args[0] = self.shared
 
+        for model_name, val in self.models.items():
+            self.args_cv.append((model_name, val, self.project_name, self.save, self.scoring))
+            for n_fold in range(self.n_folds):
+                self.args2.append((self.args, model_name, val, n_fold,
+                                   self.project_name,
+                                   self.save, self.scoring))
+
+    @ignore_warnings(category=UserWarning)
+    @ignore_warnings(category=ConvergenceWarning)
+    @ignore_warnings(category=FitFailedWarning)
+    @ignore_warnings(category=FutureWarning)
     def fit_all_models(self):
         '''
             Initialize parallel pool
@@ -262,6 +295,14 @@ class Polysis(ABC):
             pool = Pool(processes=self.concurrency)
             self.result = pool.starmap(proc, self.args2)
             pool.close()
+
+    @ignore_warnings(category=UserWarning)
+    @ignore_warnings(category=ConvergenceWarning)
+    @ignore_warnings(category=FitFailedWarning)
+    @ignore_warnings(category=FutureWarning)
+    def run_all_grids(self):
+        proc = self.run_model_grid
+        list(starmap(proc, self.args_cv))
 
     def _save_object(self, fname, obj):
         '''dump object to pickle'''
@@ -310,7 +351,8 @@ class Polysis(ABC):
             ['mean', 'std', 'min', 'max']]
         test_summary = test_summary.sort_values('mean', ascending=False)
         test_summary = test_summary.round(4)
-
+        self.train_summary = train_summary
+        self.test_summary = test_summary
         self.report.summary = {0: headers+[list(s) for s in train_summary.itertuples()]
                                + [['', '', '', '', '']]+[list(s) for s in test_summary.itertuples()]}
 

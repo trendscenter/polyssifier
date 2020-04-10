@@ -6,7 +6,9 @@ from scipy.stats import rankdata
 from functools import partial
 import os
 import matplotlib
-#matplotlib.use('TkAgg')
+from matplotlib.colors import ListedColormap
+from sklearn.decomposition import PCA
+# matplotlib.use('TkAgg')
 log = make_logger('Report')
 
 
@@ -16,6 +18,7 @@ class Report(object):
 
     def __init__(self, scores, confusions, predictions,
                  test_prob, coefficients, feature_selection,
+                 models=None, X=None, y=None,
                  scoring='auc', include=None, pathname="temp", save=False):
         self.scores = scores
         self.confusions = confusions
@@ -27,7 +30,7 @@ class Report(object):
         self.pathname = pathname
         self.figures = []
         if save:
-            self.figures = [self.plot_scores()] + self.plot_features()
+            self.figures = [self.plot_scores()]  # + self.plot_features()
 
     def plot_scores(self):
         return self.plot_scores_a(self.scores, self.scoring)

@@ -1,4 +1,7 @@
 #! /usr/bin/env python
+from sklearn.utils.testing import ignore_warnings
+from sklearn.exceptions import ConvergenceWarning, FitFailedWarning, DataConversionWarning
+
 from sklearn.datasets import make_classification
 import sys
 import numpy as np
@@ -20,7 +23,9 @@ from .report import Report
 from .logger import make_logger
 from .default_include import DEFAULT_include
 from .polysis import Polysis
-
+from warnings import simplefilter
+simplefilter(action='ignore', category=FutureWarning)
+simplefilter(action='ignore', category=ConvergenceWarning)
 sys.setrecursionlimit(10000)
 
 PERMITTED_SCORINGS = ["auc"]
@@ -81,6 +86,7 @@ class Polyssifier(Polysis):
                                                  random_state=1988,
                                                  shuffle=True)
 
+    @ignore_warnings(category=DataConversionWarning)
     def initialize_models(self, params={}):
         """Overrides abstract method"""
         self.logger.info('Building classifiers ...')
@@ -113,7 +119,6 @@ class Polyssifier(Polysis):
                 temp_pred[self.k_fold[n][1]
                           ] = self._le.inverse_transform(prediction)
                 self.coefficients[clf_name].append(coefs)
-                self.cv_results[clf_name].append(fitted_model.cv_results_)
             self.confusions[clf_name] = temp
             self.predictions[clf_name] = temp_pred
             self.test_prob[clf_name] = temp_prob
@@ -221,6 +226,9 @@ class Polyssifier(Polysis):
                 'predict proba return shape {}'.format(ypred.shape)
         return yprob
 
+    @ignore_warnings(category=UserWarning)
+    @ignore_warnings(category=ConvergenceWarning)
+    @ignore_warnings(category=FitFailedWarning)
     def fit_model(self, args, clf_name, val, n_fold, project_name, save, scoring):
         train_score, test_score, ypred, yprob, coefficients, clf = super(
             Polyssifier, self).fit_model(args, clf_name, val, n_fold, project_name, save, scoring)
