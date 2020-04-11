@@ -215,12 +215,12 @@ def build_classifiers(include, scale, feature_selection, nCols, params=DEFAULT_p
     if 'LDA' in include:
         classifiers['LDA'] = {
             'clf': LinearDiscriminantAnalysis(),
-            'parameters': {}}
+            'parameters': params['LDA']}
 
     if 'QDA' in include:
         classifiers['QDA'] = {
             'clf': QuadraticDiscriminantAnalysis(),
-            'parameters': {}}
+            'parameters': params['QDA']}
 
     if 'Gaussian Process' in include:
         classifiers['Gaussian Process'] = {

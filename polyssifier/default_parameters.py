@@ -1,6 +1,6 @@
 DEFAULT_parameters = {
     'Multilayer Perceptron': {
-        'hidden_layer_sizes': [(128,), ],
+        'hidden_layer_sizes': [(128,), (128, 64), (64,)],
         'activation': ['relu', 'identity', 'logistic', 'tanh'],
         'solver': ['adam', 'lbfgs', 'sgd'],
         'alpha': [1e-3, 1e-2, 1e-1, 1e-0],
@@ -40,21 +40,21 @@ DEFAULT_parameters = {
     },
     'SVM': {
         'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
-        'C': [0.01, 0.1, 1],
-        'degree': [1, 2, 3, 4],
+        'C': [0.001, 0.01, 0.1, 1, 10],
+        'degree': [1, 2, 3, 4, 5],
         'gamma': ['scale', 'auto'],
-        'coef0': [0],
+        'coef0': [0, 1.0, 0.1, 0.01, 0.001, 0.0001],
         'shrinking': [True],
-        'tol': [1e-3],
+        'tol': [1e-6],
         'max_iter': [-1],
         'decision_function_shape': ['ovr', 'ovo']
     },
     'Decision Tree': {
         'criterion': ['gini', 'entropy'],
         'splitter': ['best', 'random'],
-        'max_depth': [None, 10, 20],
-        'min_samples_split': [2, 4],
-        'min_samples_leaf': [1, 2],
+        'max_depth': [None, 10, 20, 30],
+        'min_samples_split': [2, 4, 8, 16],
+        'min_samples_leaf': [1, 2, 4, 8, 16],
         'min_weight_fraction_leaf': [0],
         'max_features': [None, 'auto', 'sqrt', 'log2'],
         'max_leaf_nodes': [None],
@@ -63,7 +63,7 @@ DEFAULT_parameters = {
     'Random Forest': {
         'n_estimators': [250, 500],
         'criterion': ['entropy', 'gini'],
-        'max_depth': [None, 10, 20],
+        'max_depth': [None, 10, 20, 30],
         'min_samples_split': [2],
         'min_samples_leaf': [1],
         'min_weight_fraction_leaf': [0],
@@ -73,7 +73,7 @@ DEFAULT_parameters = {
     },
     'Ada Boost': {
         'base_estimator': [None],
-        'learning_rate': [1, 1e-1, 1e-2],
+        'learning_rate': [1, 1e-1, 1e-2, 1e-3],
         'algorithm': ['SAMME.R', 'SAMME'],
     },
     'Bagging': {
@@ -85,7 +85,7 @@ DEFAULT_parameters = {
     'Extra Trees': {
         'n_estimators': [100, 250],
         'criterion': ['gini', 'entropy'],
-        'max_depth': [None],
+        'max_depth': [None, 10, 20, 30],
         'min_samples_split': [2],
         'min_samples_leaf': [1],
         'min_weight_fraction_leaf': [0],
@@ -111,7 +111,7 @@ DEFAULT_parameters = {
         'alpha': [0.001, 0.01, 0.1, 1.0, 10.0]
     },
     'Passive Aggressive': {
-        'C': [0.001, 0.01, 0.1, 1.0],
+        'C': [0.0001, 0.001, 0.01, 0.1, 1.0],
         'max_iter': [1000],
         'tol': [1e-6],
         'loss': ['hinge', 'squared_hinge']
@@ -140,6 +140,17 @@ DEFAULT_parameters = {
         'kernel': [None],
         'optimizer': ['fmin_l_bfgs_b'],
         'max_iter_predict': [500]
+    },
+    'LDA': {
+        'solver': ['svd'],
+        'shrinkage': [None],
+        'priors': [None],
+        'n_components': [None],
+        'tol': [1e-6]
+    },
+    'QDA': {
+        'priors': [None],
+        'reg_param': [0.0, 0.0001, 0.001, 0.01, 0.1, 1.0]
     },
     'Linear Regression': {},
     'Bayesian Ridge': {},
