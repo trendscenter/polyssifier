@@ -39,8 +39,6 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.gaussian_process.kernels import RBF
 
-from .default_parameters import DEFAULT_parameters
-
 
 class MyVoter(object):
     """
@@ -103,7 +101,7 @@ class MyRegressionMedianer(object):
         return avg
 
 
-def build_classifiers(include, scale, feature_selection, nCols, params=DEFAULT_parameters):
+def build_classifiers(include, scale, feature_selection, nCols, params=None):
     '''
     Input:
         - include: list of names of classifiers to include from the analysis
@@ -117,7 +115,8 @@ def build_classifiers(include, scale, feature_selection, nCols, params=DEFAULT_p
         - 'parameters': Dictionary with parameters of 'clf' as keys
     '''
     classifiers = collections.OrderedDict()
-
+    if params is None:
+        params = {name: {} for name in include}
     '''Neural Networks'''
     if 'Multilayer Perceptron' in include:
         classifiers['Multilayer Perceptron'] = {

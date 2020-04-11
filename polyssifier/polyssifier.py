@@ -97,6 +97,7 @@ class Polyssifier(Polysis):
                                         self.scale,
                                         self.feature_selection,
                                         self.data.shape[1],
+                                        params=params
                                         )
 
     def gather_results(self):

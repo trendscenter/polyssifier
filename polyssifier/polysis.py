@@ -166,10 +166,11 @@ class Polysis(ABC):
     @ignore_warnings(category=UserWarning)
     @ignore_warnings(category=ConvergenceWarning)
     @ignore_warnings(category=FitFailedWarning)
-    def run(self):
+    def run(self, run_grid=True):
         self.logger.info('Running polyssifier.')
-        self.logger.info('Running Grid Search...')
-        self.run_all_grids()
+        if run_grid:
+            self.logger.info('Running Grid Search...')
+            self.run_all_grids()
         # Parallel Processing of tasks
         self.logger.info('Fitting models...')
         self.fit_all_models()
@@ -204,7 +205,10 @@ class Polysis(ABC):
     def fit_model(self, args, name, val, n_fold, project_name, save, scoring):
         start = time.time()
         train, test = args[0]['k_fold'][n_fold]
-        clf = deepcopy(self.cv_results[name].best_estimator_)
+        if name in self.cv_results.keys():
+            clf = deepcopy(self.cv_results[name].best_estimator_)
+        else:
+            clf = deepcopy(val['clf'])
 
         self.logger.info('Training {} {}'.format(name, n_fold))
         X, y = self.get_xy(args, train)
@@ -249,6 +253,8 @@ class Polysis(ABC):
                               '/scores.pkl', self.scores)
             self._save_object(self.project_path +
                               '/report.pkl', self.report)
+            self._save_object(self.project_path +
+                              '/grid_search.pkl', self.cv_results)
 
     def print_scores(self):
         if self.verbose:
