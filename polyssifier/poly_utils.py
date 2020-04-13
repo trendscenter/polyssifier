@@ -117,6 +117,9 @@ def build_classifiers(include, scale, feature_selection, nCols, params=None):
     classifiers = collections.OrderedDict()
     if params is None:
         params = {name: {} for name in include}
+    for inc in include:
+        if inc not in params:
+            params[inc] = {}
     '''Neural Networks'''
     if 'Multilayer Perceptron' in include:
         classifiers['Multilayer Perceptron'] = {
