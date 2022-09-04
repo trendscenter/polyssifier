@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from sklearn.utils.testing import ignore_warnings
+from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning, FitFailedWarning, DataConversionWarning
 
 from sklearn.datasets import make_classification
@@ -13,7 +13,7 @@ from copy import deepcopy
 from sklearn.model_selection import StratifiedKFold, GridSearchCV, KFold
 from sklearn.metrics import (f1_score, confusion_matrix, roc_auc_score,
                              mean_squared_error, r2_score)
-from sklearn.externals import joblib
+import joblib
 import time
 from sklearn.preprocessing import LabelEncoder
 from itertools import starmap

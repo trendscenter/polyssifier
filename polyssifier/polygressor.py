@@ -10,7 +10,7 @@ from copy import deepcopy
 from sklearn.model_selection import StratifiedKFold, GridSearchCV, KFold
 from sklearn.metrics import (f1_score, confusion_matrix, roc_auc_score,
                              mean_squared_error, r2_score)
-from sklearn.externals import joblib
+import joblib
 import time
 from sklearn.preprocessing import LabelEncoder
 from itertools import starmap
